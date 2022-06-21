@@ -7,13 +7,13 @@
 
 To add this repo: 
 
-```
+```yaml
 [p]repo add maxcogs https://github.com/ltzmax/maxcogs
 ```
 
 To install any cog you want:
 
-```
+```yaml
 [p]cog install maxcogs <cog name you want>
 ```
 ---------------------------------------------------------------
@@ -39,12 +39,6 @@ To install any cog you want:
 <td>onconnect</td>
 <td>This is a cog that sends shard events for resume, on ready and disconnect.</td>
 </tr>
-<td>colorconverter</td>
-<td>Convert a color to RGB and hex. [Hidden cog]</td>
-</tr>
-<td>stats</td>
-<td>Shows some stats total of the bot.</td>
-</tr>
 </tbody>
 </table>
 
@@ -59,3 +53,6 @@ To install any cog you want:
 
 ## Support
 - You can find me in the [Cog Support server](https://discord.gg/GET4DVk) #support_othercogts or in [Red main server](https://discord.gg/red) in #testing for questions. Just ping MAX#1000 (345628097929936898)
+
+## License
+This repo is under (c) MIT License.

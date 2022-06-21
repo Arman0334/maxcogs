@@ -46,7 +46,7 @@ class Commands(MixinMeta):
         """Settings for shard event logging."""
 
     @_connectset.command(name="channel", usage="[channel]")
-    @commands.bot_has_permissions(manage_webhooks=True, add_reactions=True)
+    @commands.bot_has_permissions(add_reactions=True)
     async def _channel(
         self, ctx, *, channel: Optional[discord.TextChannel] = None
     ) -> None:
@@ -61,6 +61,12 @@ class Commands(MixinMeta):
         """
         embed_requested = await ctx.embed_requested()
         if channel:
+            if channel.permissions_for(ctx.guild.me).embed_links is False:
+                return await ctx.send(
+                    "I do not have the `embed_links` permission in {}.".format(
+                        channel.mention
+                    )
+                )
             await self.config.statuschannel.set(channel.id)
             log.info(f"Status Channel set to {channel} ({channel.id})")
             if embed_requested:
@@ -76,12 +82,19 @@ class Commands(MixinMeta):
                 )
 
         elif await self.config.statuschannel() is not None:
-            msg = await ctx.maybe_send_embed("Are you sure you want to disable events?")
-            start_adding_reactions(msg, ReactionPredicate.YES_OR_NO_EMOJIS)
+            if embed_requested:
+                embed = discord.Embed(
+                    title="Are you sure you want to disable events?",
+                    colour=await ctx.embed_colour(),
+                )
+                msg = await ctx.send(embed=embed)
+            else:
+                msg = await ctx.send("Are you sure you want to disable events?")
 
+            start_adding_reactions(msg, ReactionPredicate.YES_OR_NO_EMOJIS)
             pred = ReactionPredicate.yes_or_no(msg, ctx.author)
             try:
-                await self.bot.wait_for("reaction_add", check=pred, timeout=30)
+                await self.bot.wait_for("reaction_add", check=pred, timeout=60)
             except asyncio.TimeoutError:
                 await self.maybe_reply(
                     ctx=ctx,
@@ -116,7 +129,7 @@ class Commands(MixinMeta):
                 mention_author=True,
             )
 
-    @_connectset.group(name="emoji")
+    @_connectset.group(name="emoji", aliases=["emojis"])
     async def _emoji(self, ctx: commands.Context):
         """Settings to change default emoji.
 
